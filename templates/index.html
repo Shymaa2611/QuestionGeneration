@@ -126,11 +126,11 @@
 
     <div class="container">
         <div class="form-wrapper">
-            <h1>Upload File & Generate Questions</h1>
+            <h1>QuizGen</h1>
             <form id="uploadForm" enctype="multipart/form-data">
                 <label for="fileInput">Select a file (PDF, Video, or Audio):</label>
                 <input type="file" id="fileInput" accept="application/pdf,video/*,audio/*" required>
-                <button type="submit">Generate Questions</button>
+                <button type="submit">Generate</button>
             </form>
             <div class="loader" id="loader"></div>
             <div class="output" id="fileOutput"></div>
@@ -138,95 +138,52 @@
     </div>
 
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
             const loader = document.getElementById('loader');
             const outputDiv = document.getElementById('fileOutput');
-            
+
             if (file) {
-                // Show loader while processing
                 loader.style.display = 'block';
-                outputDiv.innerHTML = '';  // Clear any previous output
+                outputDiv.innerHTML = '';  
                 
-                const fileType = file.type;
-                
-                setTimeout(() => {
-                    loader.style.display = 'none';  // Hide loader
+                const formData = new FormData();
+                formData.append("pdf_file", file);
+
+                try {
+                   
+                    const response = await fetch("http://localhost:8000/generate_question", {
+                        method: "POST",
+                        body: formData
+                    });
                     
-                    let questionsHtml = '';
-                    
-                    if (fileType.startsWith('application/pdf')) {
-                        questionsHtml = `
-                            <h2>Generated Questions from PDF:</h2>
-                            <ul>
-                                <li>What is the main argument presented in this PDF?
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>Summarize the key points from chapter 1.
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>Explain the conclusions drawn from the document.
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>How does this document support or refute the topic it discusses?
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>What research methods are discussed or applied?
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                            </ul>
-                        `;
-                    } else if (fileType.startsWith('video/')) {
-                        questionsHtml = `
-                            <h2>Generated Questions from Video:</h2>
-                            <ul>
-                                <li>What is the key message delivered in this video?
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>Summarize the content discussed in the first 5 minutes.
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>How does the speaker explain the concept of XYZ?
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>What visuals or examples are used to support the speaker's points?
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>What is the intended audience of this video?
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                            </ul>
-                        `;
-                    } else if (fileType.startsWith('audio/')) {
-                        questionsHtml = `
-                            <h2>Generated Questions from Audio:</h2>
-                            <ul>
-                                <li>What are the main themes covered in this audio?
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>Identify key points discussed by the speaker.
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>Summarize the speaker's perspective on XYZ.
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>What tone does the speaker use to convey their message?
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                                <li>How does the speaker's voice emphasize certain topics?
-                                    <textarea placeholder="Write your answer here..."></textarea>
-                                </li>
-                            </ul>
-                        `;
-                    } else {
-                        questionsHtml = `<p>Unsupported file type.</p>`;
+                    if (!response.ok) {
+                        throw new Error("Failed to generate questions.");
                     }
                     
-                    outputDiv.innerHTML = questionsHtml;
-                }, 3000); // Simulate processing time (3 seconds)
+                    const data = await response.json();
+                    const questions = data.questions;  
+                    
+                    loader.style.display = 'none'; 
+                    let questionsHtml = '<h2>Generated Questions:</h2><ul>';
+                    questions.forEach((question, index) => {
+                        questionsHtml += `
+                            <li>
+                                ${index + 1}. ${question}
+                                <textarea placeholder="Write your answer here..."></textarea>
+                            </li>
+                        `;
+                    });
+                    questionsHtml += '</ul>';
+                    
+                    outputDiv.innerHTML = questionsHtml;  
+                } catch (error) {
+                    loader.style.display = 'none';
+                    outputDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+                }
             }
         });
     </script>
