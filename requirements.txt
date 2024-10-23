@@ -1,0 +1,6 @@
+transformers
+datasets
+torch
+fastapi
+uvicorn
+PyPDF2 
