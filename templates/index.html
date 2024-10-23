@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File & Generate Questions</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body, html {
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 0;
+        }
+        .form-wrapper {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 90%;
+            width: 100%;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            overflow-y: auto;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: block;
+            color: #555;
+        }
+        input[type="file"] {
+            padding: 16px;
+            width: 100%;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="file"]:hover {
+            border-color: #007bff;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+            margin-bottom: 30px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .output h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .output ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .output li {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 6px solid #007bff;
+        }
+        .output textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            resize: vertical;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="form-wrapper">
+            <h1>Upload File & Generate Questions</h1>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <label for="fileInput">Select a file (PDF, Video, or Audio):</label>
+                <input type="file" id="fileInput" accept="application/pdf,video/*,audio/*" required>
+                <button type="submit">Generate Questions</button>
+            </form>
+            <div class="loader" id="loader"></div>
+            <div class="output" id="fileOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const loader = document.getElementById('loader');
+            const outputDiv = document.getElementById('fileOutput');
+            
+            if (file) {
+                // Show loader while processing
+                loader.style.display = 'block';
+                outputDiv.innerHTML = '';  // Clear any previous output
+                
+                const fileType = file.type;
+                
+                setTimeout(() => {
+                    loader.style.display = 'none';  // Hide loader
+                    
+                    let questionsHtml = '';
+                    
+                    if (fileType.startsWith('application/pdf')) {
+                        questionsHtml = `
+                            <h2>Generated Questions from PDF:</h2>
+                            <ul>
+                                <li>What is the main argument presented in this PDF?
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>Summarize the key points from chapter 1.
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>Explain the conclusions drawn from the document.
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>How does this document support or refute the topic it discusses?
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>What research methods are discussed or applied?
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                            </ul>
+                        `;
+                    } else if (fileType.startsWith('video/')) {
+                        questionsHtml = `
+                            <h2>Generated Questions from Video:</h2>
+                            <ul>
+                                <li>What is the key message delivered in this video?
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>Summarize the content discussed in the first 5 minutes.
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>How does the speaker explain the concept of XYZ?
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>What visuals or examples are used to support the speaker's points?
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>What is the intended audience of this video?
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                            </ul>
+                        `;
+                    } else if (fileType.startsWith('audio/')) {
+                        questionsHtml = `
+                            <h2>Generated Questions from Audio:</h2>
+                            <ul>
+                                <li>What are the main themes covered in this audio?
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>Identify key points discussed by the speaker.
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>Summarize the speaker's perspective on XYZ.
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>What tone does the speaker use to convey their message?
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                                <li>How does the speaker's voice emphasize certain topics?
+                                    <textarea placeholder="Write your answer here..."></textarea>
+                                </li>
+                            </ul>
+                        `;
+                    } else {
+                        questionsHtml = `<p>Unsupported file type.</p>`;
+                    }
+                    
+                    outputDiv.innerHTML = questionsHtml;
+                }, 3000); // Simulate processing time (3 seconds)
+            }
+        });
+    </script>
+
+</body>
+</html>
