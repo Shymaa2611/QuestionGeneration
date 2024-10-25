@@ -32,8 +32,8 @@ def generate_question(context):
 def inference(context):
     _,model=  load_model()
     model.eval()
-    question = generate_question(context)
-    return question
+    questions = generate_question(context)
+    return questions
 
     
    

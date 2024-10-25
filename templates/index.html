@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload File & Generate Questions</title>
+    <title>QuizGen</title>
     <style>
         * {
             box-sizing: border-box;
@@ -61,7 +61,7 @@
             border-color: #007bff;
         }
         button {
-            background-color: #007bff;
+            background-color: #eed049;
             color: white;
             border: none;
             padding: 15px 25px;
@@ -73,7 +73,7 @@
             margin-bottom: 30px;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #bea63b;
         }
         .output {
             text-align: left;
@@ -93,7 +93,7 @@
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 8px;
-            border-left: 6px solid #007bff;
+            border-left: 6px solid #eed049;
         }
         .output textarea {
             width: 100%;
@@ -108,7 +108,7 @@
         }
         .loader {
             border: 5px solid #f3f3f3;
-            border-top: 5px solid #007bff;
+            border-top: 5px solid #eed049;
             border-radius: 50%;
             width: 50px;
             height: 50px;
@@ -151,11 +151,11 @@
                 outputDiv.innerHTML = '';  
                 
                 const formData = new FormData();
-                formData.append("pdf_file", file);
+                formData.append("file", file);
 
                 try {
                    
-                    const response = await fetch("http://localhost:8000/generate_question", {
+                    const response = await fetch("/generate_question", {
                         method: "POST",
                         body: formData
                     });

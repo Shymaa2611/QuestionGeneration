@@ -4,6 +4,7 @@ QuizGen is a web application designed for generating questions based on input do
 
 ## DEMO
 
+![Demo](media/demo.gif)
 
 ## Features
 
