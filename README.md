@@ -6,6 +6,11 @@ QuizGen is a web application designed for generating questions based on input do
 
 ![Demo](media/demo.gif)
 
+
+## Advance DEMO 
+
+![Demo](media/adnace_Demo.gif)
+
 ## Features
 
 - Upload PDF documents, videos, or audio files to generate relevant questions.
