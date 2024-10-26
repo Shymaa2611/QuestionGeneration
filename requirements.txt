@@ -4,3 +4,5 @@ torch
 fastapi
 uvicorn
 PyPDF2 
+autocorrect 
+nltk
